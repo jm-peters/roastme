@@ -1,0 +1,348 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with full economy system and customization",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "usernameLower": { "type": "string" },
+        "email": { "type": "string" },
+        "rmpBalance": { "type": "integer" },
+        "coinBalance": { "type": "integer" },
+        "totalRMPEarned": { "type": "integer" },
+        "totalCoinsEarned": { "type": "integer" },
+        "totalWithdrawn": { "type": "integer" },
+        "pendingWithdrawal": { "type": "integer" },
+        "usdEarned": { "type": "number" },
+        "totalShares": { "type": "integer" },
+        "totalReferrals": { "type": "integer" },
+        "totalRoasts": { "type": "integer" },
+        "totalChallenges": { "type": "integer" },
+        "totalPranks": { "type": "integer" },
+        "totalGamesPlayed": { "type": "integer" },
+        "totalPageViews": { "type": "integer" },
+        "referralCode": { "type": "string" },
+        "referredBy": { "type": "string" },
+        "withdrawalAddress": { "type": "string" },
+        "withdrawalMethod": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "lastLoginAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "avatarFrame": { "type": "string" },
+        "profileBg": { "type": "string" },
+        "roastTitle": { "type": "string" },
+        "streakFreezeAvailable": { "type": "integer" },
+        "streakFrozen": { "type": "boolean" }
+      },
+      "required": ["id", "username"]
+    },
+    "SpinHistory": {
+      "title": "Spin History",
+      "description": "Daily spin reward tracking",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string" },
+        "reward": { "type": "integer" },
+        "rewardType": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ReferralLadder": {
+      "title": "Referral Ladder",
+      "description": "Tiered rewards for referring users",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "tier": { "type": "integer" },
+        "rewardsClaimed": { "type": "object" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "RMPTransaction": {
+      "title": "RMP Transaction",
+      "description": "Log of RMP earnings or deductions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "amount": { "type": "integer" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "relatedId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "CoinTransaction": {
+      "title": "Coin Transaction",
+      "description": "Log of Coin conversions or withdrawals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "amount": { "type": "integer" },
+        "rmpConverted": { "type": "integer" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "balanceAfter": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Withdrawal": {
+      "title": "Withdrawal",
+      "description": "Withdrawal request",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "amount": { "type": "integer" },
+        "usdAmount": { "type": "number" },
+        "address": { "type": "string" },
+        "method": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "processing", "completed", "rejected"] },
+        "processedAt": { "type": "string", "format": "date-time" },
+        "transactionId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Referral": {
+      "title": "Referral",
+      "description": "Referral tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "referrerId": { "type": "string" },
+        "referredId": { "type": "string" },
+        "referredUsername": { "type": "string" },
+        "status": { "type": "string" },
+        "rewardPaid": { "type": "boolean" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Roast": {
+      "title": "Roast",
+      "description": "A generated roast post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "username": { "type": "string" },
+        "text": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "mode": { "type": "string", "enum": ["roast", "hype"] },
+        "intensity": { "type": "string" },
+        "isPublic": { "type": "boolean" },
+        "shareAnonymously": { "type": "boolean" },
+        "reactions": { "type": "object" },
+        "remixCount": { "type": "integer" },
+        "viewCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "text"]
+    },
+    "Reaction": {
+      "title": "Reaction",
+      "description": "User reaction to a roast",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "roastId": { "type": "string" },
+        "type": { "type": "string", "enum": ["fire", "skull", "laugh"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "roastId", "type"]
+    },
+    "Challenge": {
+      "title": "Challenge",
+      "description": "A monthly or event-based challenge.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "month": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "prizePool": { "type": "number" },
+        "participants": { "type": "object" }
+      }
+    },
+    "ChallengeRoom": {
+      "title": "Challenge Room",
+      "description": "Room for real-time challenges using room codes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "roomCode": { "type": "string" },
+        "hostId": { "type": "string" },
+        "hostName": { "type": "string" },
+        "gameType": { "type": "string" },
+        "status": { "type": "string" },
+        "maxPlayers": { "type": "integer" },
+        "currentPlayers": { "type": "integer" },
+        "players": { "type": "object" },
+        "gameData": { "type": "object" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "completedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "roomCode", "hostId", "gameType"]
+    },
+    "MatchmakingQueue": {
+      "title": "Matchmaking Queue",
+      "description": "Queue for matching random players",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "username": { "type": "string" },
+        "gameType": { "type": "string" },
+        "joinedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "gameType"]
+    },
+    "RoastProfile": {
+      "title": "Roast Profile",
+      "description": "User profile for specialized AI roasts",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "jobTitle": { "type": "string" },
+        "hobbies": { "type": "array", "items": { "type": "string" } },
+        "biggestHabit": { "type": "string" },
+        "relationshipStatus": { "type": "string" },
+        "lastEmbarrassingThing": { "type": "string" },
+        "preferredPersona": { "type": "string" },
+        "preferredIntensity": { "type": "string" },
+        "totalRoastsReceived": { "type": "number" }
+      }
+    },
+    "RoastSession": {
+      "title": "Roast Session",
+      "description": "Details of a specific roast generation",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "inputType": { "type": "string" },
+        "inputContent": { "type": "string" },
+        "persona": { "type": "string" },
+        "intensity": { "type": "string" },
+        "roastText": { "type": "string" },
+        "userRating": { "type": "string" },
+        "comebackText": { "type": "string" },
+        "aiComebackJudgment": { "type": "string" },
+        "saved": { "type": "boolean" }
+      }
+    },
+    "RoastStreak": {
+      "title": "Roast Streak",
+      "description": "Tracking user activity consistency",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "currentStreak": { "type": "number" },
+        "longestStreak": { "type": "number" },
+        "lastActiveDate": { "type": "string" }
+      }
+    },
+    "RoastBattle": {
+      "title": "Roast Battle",
+      "description": "A duel between two users",
+      "type": "object",
+      "properties": {
+        "challengerId": { "type": "string" },
+        "challengedId": { "type": "string" },
+        "topic": { "type": "string" },
+        "challengerRoast": { "type": "string" },
+        "challengedRoast": { "type": "string" },
+        "status": { "type": "string" },
+        "winnerId": { "type": "string" }
+      }
+    },
+    "DailyRoast": {
+      "title": "Daily Roast",
+      "description": "Daily automated roast",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string" },
+        "roastText": { "type": "string" },
+        "opened": { "type": "boolean" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/rmp_transactions/{txId}": {
+      "schema": "RMPTransaction",
+      "description": "RMP Transaction logs"
+    },
+    "/coin_transactions/{txId}": {
+      "schema": "CoinTransaction",
+      "description": "Coin Transaction logs"
+    },
+    "/withdrawals/{wId}": {
+      "schema": "Withdrawal",
+      "description": "Withdrawal requests"
+    },
+    "/referrals/{refId}": {
+      "schema": "Referral",
+      "description": "Referral records"
+    },
+    "/spin_history/{spinId}": {
+      "schema": "SpinHistory",
+      "description": "Daily spin history"
+    },
+    "/referral_ladders/{userId}": {
+      "schema": "ReferralLadder",
+      "description": "Referral ladder status"
+    },
+    "/roasts/{roastId}": {
+      "schema": "Roast",
+      "description": "Generated roasts"
+    },
+    "/roasts/{roastId}/reactions/{reactionId}": {
+      "schema": "Reaction",
+      "description": "Roast reactions"
+    },
+    "/challenges/{challengeId}": {
+      "schema": "Challenge",
+      "description": "Monthly or event-based challenges."
+    },
+    "/challenge_rooms/{roomId}": {
+      "schema": "ChallengeRoom",
+      "description": "Real-time game rooms"
+    },
+    "/matchmaking_queue/{queueId}": {
+      "schema": "MatchmakingQueue",
+      "description": "Queue for matching random players"
+    },
+    "/roast_profiles/{userId}": {
+      "schema": "RoastProfile",
+      "description": "User preferences and profile for personalized roasts"
+    },
+    "/roast_sessions/{sessionId}": {
+      "schema": "RoastSession",
+      "description": "Historical record of generated roasts"
+    },
+    "/roast_streaks/{userId}": {
+      "schema": "RoastStreak",
+      "description": "User's daily roasting activity streaks"
+    },
+    "/roast_battles/{battleId}": {
+      "schema": "RoastBattle",
+      "description": "Head-to-head roast battles between users"
+    },
+    "/daily_roasts/{docId}": {
+      "schema": "DailyRoast",
+      "description": "Daily personalized roast for each user"
+    }
+  }
+}
