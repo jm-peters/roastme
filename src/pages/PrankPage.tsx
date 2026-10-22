@@ -276,7 +276,7 @@ export default function PrankPage() {
       });
       const data = await res.json();
       // Generate the local link correctly
-      const baseUrl = 'https://roastme.site';
+      const baseUrl = 'https://games.roastme.site';
       setGeneratedLink(`${baseUrl}/prank/${data.id}`);
       setStep('share');
       showToast('Prank ready for action! 😈');

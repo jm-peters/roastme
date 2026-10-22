@@ -31,7 +31,7 @@ const ShareCard = forwardRef<HTMLDivElement, { roast: any }>(({ roast }, ref) =>
         </h2>
         
         <div className="absolute bottom-16 text-center w-full left-0">
-          <p className="text-zinc-500 font-mono text-2xl">Get roasted → roastme.site</p>
+          <p className="text-zinc-500 font-mono text-2xl">Get roasted → games.roastme.site</p>
         </div>
       </div>
     </div>

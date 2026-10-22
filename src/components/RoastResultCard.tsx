@@ -72,12 +72,12 @@ export default function RoastResultCard({ roast, mode = 'roast' }: RoastResultCa
       // If we're not the owner, we shouldn't be trying to shorten/map this roast to our handle
       // Instead, we just use the default long link or try to resolve if there's an existing one
       if (!isOwner && roast.username && roast.username !== 'anonymous') {
-        setShareLink(`https://roastme.site/roast/${roast.username}`);
+        setShareLink(`https://games.roastme.site/roast/${roast.username}`);
         return;
       }
 
       if (!auth.currentUser) {
-        setShareLink(`https://roastme.site/roast/${roast.id}`);
+        setShareLink(`https://games.roastme.site/roast/${roast.id}`);
         return;
       }
 
@@ -96,7 +96,7 @@ export default function RoastResultCard({ roast, mode = 'roast' }: RoastResultCa
         if (!err.message?.includes('403')) {
           console.error('Failed to fetch short link:', err);
         }
-        setShareLink(`https://roastme.site/roast/${roast.id}`);
+        setShareLink(`https://games.roastme.site/roast/${roast.id}`);
       }
     };
 
@@ -115,9 +115,9 @@ export default function RoastResultCard({ roast, mode = 'roast' }: RoastResultCa
 
   const getShareLink = () => {
     if (anonymous) {
-      return `https://roastme.site/roast/${roast.id}?anon=true`;
+      return `https://games.roastme.site/roast/${roast.id}?anon=true`;
     }
-    return shareLink || `https://roastme.site/roast/${roast.id}`;
+    return shareLink || `https://games.roastme.site/roast/${roast.id}`;
   };
 
   const getShareMessage = (platform: string) => {

@@ -36,7 +36,7 @@ export default function AnonymousPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setGeneratedLink(`https://roastme.site/anonymous/send/${data.linkCode}`);
+        setGeneratedLink(`https://games.roastme.site/anonymous/send/${data.linkCode}`);
         showToast('Anonymous link generated! 👻');
       } else {
         showToast(data.error || 'Failed to generate link', 'error');
@@ -203,7 +203,7 @@ export default function AnonymousPage() {
                 <div className="space-y-3">
                   <button 
                     onClick={() => {
-                      const text = `I'm opening up to anonymous messages. Say what you really think: ${generatedLink || 'https://roastme.site/anonymous'}`;
+                      const text = `I'm opening up to anonymous messages. Say what you really think: ${generatedLink || 'https://games.roastme.site/anonymous'}`;
                       navigator.clipboard.writeText(text);
                       showToast('Template copied!');
                     }}
@@ -213,7 +213,7 @@ export default function AnonymousPage() {
                   </button>
                   <button 
                     onClick={() => {
-                      const text = `Send me an anonymous message — no names, no judgment. ${generatedLink || 'https://roastme.site/anonymous'}`;
+                      const text = `Send me an anonymous message — no names, no judgment. ${generatedLink || 'https://games.roastme.site/anonymous'}`;
                       navigator.clipboard.writeText(text);
                       showToast('Template copied!');
                     }}

@@ -3336,7 +3336,7 @@ async function startServer() {
     res.json({
       success: true,
       linkCode: (link as any).linkCode,
-      link: `https://roastme.site/anonymous/send/${(link as any).linkCode}`,
+      link: `https://games.roastme.site/anonymous/send/${(link as any).linkCode}`,
       username: (link as any).username
     });
   });

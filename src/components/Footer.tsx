@@ -70,7 +70,7 @@ export default function Footer() {
 
           <div className="pt-12 border-t border-gallery-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-gallery-white/20 whitespace-pre-wrap">
-              ©roastme.site
+              ©games.roastme.site
               the number one entertainment and reward system
             </p>
           </div>

@@ -20,7 +20,7 @@ export default function ShareMomentButton({ momentType, text }: ShareMomentButto
     let prefix = "Check this out: ";
     if (momentType === 'fail') prefix = "I failed! Can you beat me? ";
     
-    const shareText = `${prefix}"${text}"\n\nhttps://roastme.site`;
+    const shareText = `${prefix}"${text}"\n\nhttps://games.roastme.site`;
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
   };
   
