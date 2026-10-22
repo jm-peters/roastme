@@ -69,7 +69,7 @@ export default function RoastFeed({ filter = 'trending' }: RoastFeedProps) {
               item={item}
               onReact={reactToRoast}
               onDelete={deleteRoast}
-              onRemix={(id) => window.location.href = `/remix/${id}`}
+              onRemix={(id) => window.location.href = `https://games.roastme.site/remix/${id}`}
               isAuthor={item.userId === userId}
             />
           </div>

@@ -16,7 +16,7 @@ export function generateShareMessage(config: ShareMessageConfig & { username?: s
   const sender = config.customSender || `@${username}`;
   
   // SINGLE LINK - short and clean
-  const shortLink = config.customLink || `${window.location.origin}/roast/${username}`;
+  const shortLink = config.customLink || `https://games.roastme.site/roast/${username}`;
   
   const challengeText = config.includeDeathThreat 
     ? `ROAST ME BACK OR DIE LIKE A LOSER 💀`

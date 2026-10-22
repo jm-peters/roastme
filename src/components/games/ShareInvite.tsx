@@ -76,8 +76,8 @@ export default function ShareInvite({ title = "Invite Friends", url: rawUrl, tex
 
   // Ensure production domain for all shared links and handle absolute/relative paths
   const url = rawUrl.startsWith('http') 
-    ? rawUrl.replace(window.location.origin, 'https://roastme.site')
-    : `https://roastme.site${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
+    ? rawUrl.replace(/https?:\/\/[^\/]+/, 'https://games.roastme.site')
+    : `https://games.roastme.site${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(`${text} ${url}`);

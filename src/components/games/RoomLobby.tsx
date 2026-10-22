@@ -63,7 +63,7 @@ export default function RoomLobby({ roomCode, onGameStart, onLeave }: RoomLobbyP
   };
 
   const copyInviteLink = () => {
-    const link = `${window.location.origin}/join/${roomCode}`;
+    const link = `https://games.roastme.site/join/${roomCode}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

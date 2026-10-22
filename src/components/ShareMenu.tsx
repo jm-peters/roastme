@@ -38,7 +38,7 @@ export default function ShareMenu({ roastId, roastText, photoUrl, username, user
 
   useEffect(() => {
     // Generate base link
-    const baseLink = `${window.location.origin}/roast/${roastId}`;
+    const baseLink = `https://games.roastme.site/roast/${roastId}`;
     setShareLink(baseLink);
 
     // Try to get short link if possible (silent fail)

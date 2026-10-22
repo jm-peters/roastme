@@ -315,7 +315,7 @@ export default function DuoBattlePage() {
         
         <div className="mt-8 text-center pb-12">
           <button onClick={() => {
-            const link = window.location.href;
+            const link = `https://games.roastme.site${window.location.pathname}${window.location.search}`;
             navigator.clipboard.writeText(link);
             alert('Battle link copied! Share it for more votes.');
           }} className="bg-transparent border-2 border-gray-700 hover:border-gray-500 text-white px-8 py-4 rounded-xl transition-all transform hover:scale-105 font-bold uppercase tracking-widest text-sm hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]">

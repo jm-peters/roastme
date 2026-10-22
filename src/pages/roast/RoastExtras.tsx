@@ -37,7 +37,7 @@ export function ShareCard({ roastId, roastText, persona, intensity, signoff, onC
   const iLabel = INTENSITY_LABELS[intensity] || '';
   const pLabel = PERSONA_LABELS[persona] || '';
 
-  const shareLink = roastId ? `${window.location.origin}/roast/${roastId}` : window.location.origin;
+  const shareLink = roastId ? `https://games.roastme.site/roast/${roastId}` : 'https://games.roastme.site';
 
   async function exportCard() {
     setExporting(true);

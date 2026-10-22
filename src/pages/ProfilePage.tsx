@@ -103,7 +103,7 @@ const ProfilePage: React.FC = () => {
   };
 
   const copyReferral = () => {
-    const link = `${window.location.origin}/auth?ref=${stats.referralCode}`;
+    const link = `https://games.roastme.site/auth?ref=${stats.referralCode}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -244,7 +244,7 @@ const ProfilePage: React.FC = () => {
               <div className="flex bg-zinc-900 border-2 border-white/20">
                 <input 
                   readOnly 
-                  value={`${window.location.origin}/auth?ref=${stats?.referralCode}`} 
+                  value={`https://games.roastme.site/auth?ref=${stats?.referralCode}`} 
                   className="bg-transparent border-none p-2 text-xs font-bold text-white flex-1 outline-none truncate"
                 />
                 <button 

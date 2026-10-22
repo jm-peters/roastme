@@ -250,7 +250,8 @@ export default function ChallengePage() {
           <div className="flex gap-4 w-full md:w-auto">
             <button 
               onClick={() => {
-                navigator.clipboard.writeText(window.location.href);
+                const shareUrl = `https://games.roastme.site${window.location.pathname}${window.location.search}`;
+                navigator.clipboard.writeText(shareUrl);
                 confetti({ particleCount: 50, spread: 30, origin: { y: 0.9 } });
               }}
               className="flex-1 md:flex-none p-3 border-2 border-gallery-white/20 text-gallery-white hover:border-neon-green hover:text-neon-green transition-colors flex items-center justify-center gap-2 font-mono text-xs uppercase"
