@@ -1,0 +1,11 @@
+const body = JSON.stringify({ systemPrompt: "test", userPrompt: "test" });
+fetch('http://localhost:3000/api/roast/v2/generate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer fake_token'
+  },
+  body
+})
+  .then(res => res.text().then(text => console.log('Status:', res.status, 'Body:', text.substring(0, 100))))
+  .catch(e => console.error(e));

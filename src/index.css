@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Anton", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-neon-green: #00FF00;
+  --color-brutal-black: #000000;
+  --color-gallery-white: #FFFFFF;
+  --roast-friendly: #4ade80;
+  --roast-medium: #fb923c;
+  --roast-savage: #f87171;
+  --roast-scorched: #dc2626;
+  --roast-scorched-glow: rgba(220, 38, 38, 0.25);
+  --battle-gold: #fbbf24;
+  --trophy-gold: #f59e0b;
+
+  /* Theme Overrides */
+  --theme-bg: #000000;
+  --theme-text: #FFFFFF;
+  --theme-accent: #00FF00;
+  --theme-ui-border: #FFFFFF;
+  --theme-font-base: 14px;
+}
+
+[data-theme="junior"] {
+  --theme-bg: #FFEBEE;
+  --theme-text: #2D3436;
+  --theme-accent: #FF7675;
+  --theme-ui-border: #FF7675;
+  --theme-font-base: 16px;
+}
+
+[data-theme="classic"] {
+  --theme-bg: #F5F6FA;
+  --theme-text: #171717;
+  --theme-accent: #0984E3;
+  --theme-ui-border: #171717;
+  --theme-font-base: 18px;
+}
+
+@layer base {
+  body {
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
+    font-size: var(--theme-font-base);
+    @apply font-sans antialiased overflow-x-hidden transition-all duration-300;
+  }
+
+  h1, h2, h3 {
+    @apply font-display uppercase tracking-tighter;
+  }
+}
+
+/* Marquee Animations */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 20s linear infinite;
+}
+
+/* Hover pause for accessibility */
+.animate-marquee:hover,
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+.brutal-border {
+  @apply border-2 border-gallery-white shadow-[4px_4px_0px_0px_rgba(255,255,255,1)];
+}
+
+.brutal-btn {
+  @apply bg-gallery-white text-brutal-black font-display px-6 py-3 uppercase transition-all hover:bg-neon-green hover:shadow-[6px_6px_0px_0px_rgba(0,255,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none;
+}
+
+/* Screen shake animation */
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake-effect {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Embarrassment score indicator */
+.embarrassment-badge {
+  transition: all 0.3s ease;
+}
+
+.embarrassment-badge.high {
+  background: linear-gradient(135deg, #ff0000, #ff6600);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+/* Custom Scrollbar for Settings Modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.3);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.5);
+}

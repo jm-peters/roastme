@@ -1,0 +1,165 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Global Safety Net & Basic Helpers
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+             (request.auth.token.email == "peterngechu002@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    // ===============================================================
+    // Validation Blueprints
+    // ===============================================================
+    
+    function isValidUser(data) {
+      return data.username is string &&
+             (data.username == "" || (data.username.size() >= 3 && data.username.size() <= 30));
+    }
+
+    function isValidRoast(data) {
+      return data.keys().hasAll(['id', 'userId', 'text']) &&
+             data.id is string &&
+             data.userId is string &&
+             data.text is string && data.text.size() <= 2000;
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Users
+    match /users/{userId} {
+      allow get, list: if true;
+      allow create: if isOwner(userId) && isValidUser(incoming()) && (
+        !('id' in incoming()) || incoming().id == userId
+      );
+      allow update: if isOwner(userId) && isValidUser(incoming()) && (
+        !('id' in incoming()) || incoming().id == userId
+      );
+    }
+
+    // Roasts
+    match /roasts/{roastId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && isValidRoast(incoming()) && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        (existing().userId == request.auth.uid && isValidRoast(incoming())) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['viewCount', 'remixCount', 'reactions', 'battleWins', 'battleLosses']))
+      );
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+
+      match /reactions/{reactionId} {
+        allow get, list: if true;
+        allow create: if isSignedIn() && incoming().userId == request.auth.uid && incoming().roastId == roastId;
+        allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+      }
+    }
+
+    // Roast Sessions
+    match /roastSessions/{sessionId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn() && existing().userId == request.auth.uid;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    // Roast Profiles
+    match /roastProfiles/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    // Daily Roasts
+    match /dailyRoasts/{docId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow write: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid) && incoming().userId == request.auth.uid;
+    }
+
+    // Weekly Reports
+    match /weeklyReports/{reportId} {
+      allow get: if isSignedIn() && (resource == null || reportId == request.auth.uid);
+      allow list: if isSignedIn() && reportId == request.auth.uid;
+      allow update: if isSignedIn() && reportId == request.auth.uid;
+    }
+
+    // Roast Battles
+    match /roastBattles/{battleId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+
+      match /voters/{voterId} {
+        allow read: if isSignedIn();
+        allow write: if isOwner(voterId);
+      }
+    }
+
+    // Challenges
+    match /challenges/{challengeId} {
+      allow get, list: if true;
+      allow write: if isAdmin();
+    }
+
+    // Coin Transactions
+    match /coin_transactions/{txId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // RMP Transactions
+    match /rmp_transactions/{txId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    // Withdrawals
+    match /withdrawals/{wId} {
+      allow get: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update: if isAdmin();
+    }
+
+    // Referrals
+    match /referrals/{refId} {
+      allow get: if isSignedIn() && (existing().referrerId == request.auth.uid || existing().referredId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.referrerId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn();
+      allow update: if isAdmin();
+    }
+
+    // Cache & Trending (System only)
+    match /roast_cache/{hash} { allow read: if true; }
+    match /trending_roasts/{roastId} { allow read: if true; }
+  }
+}
