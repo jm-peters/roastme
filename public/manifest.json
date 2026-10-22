@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "ROASTME - Ultimate Roast & Games Platform",
+  "short_name": "ROASTME",
+  "description": "Roast friends, play trivia games, send anonymous messages, and complete challenges.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#0a0a0b",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

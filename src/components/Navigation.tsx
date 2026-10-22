@@ -8,6 +8,7 @@ import StreakVisual from './StreakVisual';
 
 import { useAppTheme } from '../hooks/useAppTheme';
 import { WifiOff } from 'lucide-react';
+import PWAInstallButton from './PWAInstallButton';
 
 const navItems = [
   { path: '/', label: 'Roast', icon: <Flame size={18} />, short: '🔥', color: 'text-red-500' },
@@ -75,6 +76,7 @@ export default function Navigation({
         </div>
 
         <div className="flex items-center gap-2">
+          <PWAInstallButton />
           {username ? (
             <div className="flex items-center gap-2">
               <StreakVisual />
