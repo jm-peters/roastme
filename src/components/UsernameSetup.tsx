@@ -129,17 +129,64 @@ export default function UsernameSetup({ onComplete, isOpen, userId }: UsernameSe
           try {
             await linkWithCredential(auth.currentUser, credential);
           } catch (linkErr: any) {
-            console.warn("Linking failed, falling back to direct creation:", linkErr);
-            // If the email is already in use, it means they already have an account with this username
+            console.warn("Linking notice:", linkErr?.code || linkErr?.message);
+            // If the username/email is already in use, try logging in with the entered credentials
             if (linkErr.code === 'auth/email-already-in-use' || linkErr.code === 'auth/credential-already-in-use') {
-               throw new Error('This username is already taken. Try logging in instead.');
+              try {
+                await signInWithEmailAndPassword(auth, email, password);
+                setSuccess(true);
+                localStorage.setItem('username', trimmedUsername);
+                setTimeout(() => onComplete?.(trimmedUsername), 1000);
+                return;
+              } catch {
+                setIsLogin(true);
+                setError('Username already registered. Please enter your password to log in.');
+                setIsChecking(false);
+                return;
+              }
             }
             // Other failures: sign out and try fresh creation
             await auth.signOut();
-            await createUserWithEmailAndPassword(auth, email, password);
+            try {
+              await createUserWithEmailAndPassword(auth, email, password);
+            } catch (createErr: any) {
+              if (createErr.code === 'auth/email-already-in-use') {
+                try {
+                  await signInWithEmailAndPassword(auth, email, password);
+                  setSuccess(true);
+                  localStorage.setItem('username', trimmedUsername);
+                  setTimeout(() => onComplete?.(trimmedUsername), 1000);
+                  return;
+                } catch {
+                  setIsLogin(true);
+                  setError('Username already registered. Please enter your password to log in.');
+                  setIsChecking(false);
+                  return;
+                }
+              }
+              throw createErr;
+            }
           }
         } else {
-          await createUserWithEmailAndPassword(auth, email, password);
+          try {
+            await createUserWithEmailAndPassword(auth, email, password);
+          } catch (createErr: any) {
+            if (createErr.code === 'auth/email-already-in-use') {
+              try {
+                await signInWithEmailAndPassword(auth, email, password);
+                setSuccess(true);
+                localStorage.setItem('username', trimmedUsername);
+                setTimeout(() => onComplete?.(trimmedUsername), 1000);
+                return;
+              } catch {
+                setIsLogin(true);
+                setError('Username already registered. Please enter your password to log in.');
+                setIsChecking(false);
+                return;
+              }
+            }
+            throw createErr;
+          }
         }
 
         const currentUid = auth.currentUser?.uid;
@@ -186,7 +233,7 @@ export default function UsernameSetup({ onComplete, isOpen, userId }: UsernameSe
             });
           }
         } catch (syncErr) {
-          console.error("Backend sync error:", syncErr);
+          console.warn("Backend sync notice:", syncErr);
         }
 
         setSuccess(true);
@@ -194,15 +241,19 @@ export default function UsernameSetup({ onComplete, isOpen, userId }: UsernameSe
         setTimeout(() => onComplete?.(trimmedUsername), 1000);
       }
     } catch (err: any) {
-      console.error('Auth error:', err);
+      console.warn('Auth notice:', err?.code || err?.message);
       let message = 'Operation failed';
       if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
         message = 'Invalid username or password';
       } else if (err.code === 'auth/email-already-in-use') {
-        message = 'This username is already taken. Try logging in instead.';
+        setIsLogin(true);
+        message = 'Username already registered. Please enter your password to log in.';
       } else if (err.code === 'auth/credential-already-in-use') {
         message = 'This account is already linked to another user.';
       } else if (err.message && err.message.includes('taken')) {
+        setIsLogin(true);
+        message = 'Username already registered. Please enter your password to log in.';
+      } else if (err.message) {
         message = err.message;
       }
       setError(message);
@@ -349,7 +400,7 @@ export default function UsernameSetup({ onComplete, isOpen, userId }: UsernameSe
             <div className="flex flex-col gap-4 pt-2">
               <button
                 onClick={handleSubmit}
-                disabled={isChecking || (!isLogin && !isAvailable) || password.length < 6}
+                disabled={isChecking || (!isLogin && isAvailable === false) || password.length < 6}
                 className="w-full bg-[#00e676] hover:bg-emerald-400 text-black py-4.5 rounded-full font-sans font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-[0.97] disabled:opacity-30 cursor-pointer shadow-[0_0_20px_rgba(0,230,118,0.2)]"
               >
                 {isChecking ? 'SECURED TUNNELS...' : isLogin ? 'Proceed To Arena →' : 'Claim Roastboard Now →'}

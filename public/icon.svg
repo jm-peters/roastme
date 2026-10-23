@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a0b" />
+      <stop offset="100%" stop-color="#031a14" />
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff3300" />
+      <stop offset="50%" stop-color="#ff9900" />
+      <stop offset="100%" stop-color="#39ff14" />
+    </linearGradient>
+    <linearGradient id="innerFlame" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ffea00" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Background with brutalist rounded border -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGrad)" />
+  <rect x="12" y="12" width="488" height="488" rx="88" fill="none" stroke="#39ff14" stroke-width="8" stroke-opacity="0.3" />
+  
+  <!-- Outer Flame Glow -->
+  <path d="M256 64 C280 140 330 180 370 240 C410 300 400 380 340 420 C290 455 222 455 172 420 C112 380 102 300 142 240 C182 180 232 140 256 64 Z" fill="#ff3300" opacity="0.25" filter="url(#glow)" />
+  
+  <!-- Main Flame Body -->
+  <path d="M256 80 C278 150 324 188 360 244 C396 300 388 372 334 410 C288 442 224 442 178 410 C124 372 116 300 152 244 C188 188 234 150 256 80 Z" fill="url(#flameGrad)" />
+  
+  <!-- Secondary inner tongue of fire -->
+  <path d="M256 180 C270 220 300 250 320 290 C340 330 330 375 295 400 C270 418 242 418 217 400 C182 375 172 330 192 290 C212 250 242 220 256 180 Z" fill="#ff7700" />
+  
+  <!-- Core bright flame -->
+  <path d="M256 260 C264 285 282 305 292 330 C302 355 295 380 275 395 C263 404 249 404 237 395 C217 380 210 355 220 330 C230 305 248 285 256 260 Z" fill="url(#innerFlame)" />
+  
+  <!-- Stylized "R" spark -->
+  <text x="256" y="475" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="36" fill="#39ff14" letter-spacing="8">ROASTME</text>
+</svg>

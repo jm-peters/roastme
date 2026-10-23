@@ -121,7 +121,7 @@ function AnalyticsTracker() {
     }
 
     if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('config', 'G-DGNSZM2D4W', {
+      (window as any).gtag('config', 'G-353M9XJBSV', {
         page_path: location.pathname + location.search,
       });
     }
