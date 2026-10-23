@@ -34,29 +34,34 @@ export default function FriendshipPage() {
   const username = localStorage.getItem('username');
 
   useEffect(() => {
-    fetch('/api/friendship/question-pool')
-      .then(res => res.json())
-      .then(data => setQuestionPool(data.questions))
-      .catch(console.error);
-  }, []);
-
-  const selectChallengeType = (type: string) => {
-    if (!username) {
-      showToast('Please create a roastboard first!', 'error');
-      navigate('/?setup=true');
+    if (challengeId) {
+      navigate(`/friendship/accept/${challengeId}`, { replace: true });
       return;
     }
+
+    fetch('/api/friendship/question-pool')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data?.questions) && data.questions.length > 0) {
+          setQuestionPool(data.questions);
+        }
+      })
+      .catch(console.warn);
+  }, [challengeId, navigate]);
+
+  const selectChallengeType = (type: string) => {
     setChallengeType(type);
     
-    // Filter questions by category
+    // Filter questions by category (or fallback to pool)
     const filtered = questionPool.filter(q => q.category === type);
+    const sourceQuestions = filtered.length >= 10 ? filtered : questionPool;
     
     if (type === 'custom') {
       setStep('customizing');
-      setSelectedQuestions(filtered.slice(0, 10)); // Default to first 10
+      setSelectedQuestions(sourceQuestions.slice(0, 10)); // Default to first 10
     } else {
       // Skip customizing for predefined categories
-      const selected = filtered.slice(0, 10);
+      const selected = sourceQuestions.slice(0, 10);
       const formattedQuestions = selected.map(q => ({
         question: q.question,
         options: q.options,
@@ -113,14 +118,21 @@ export default function FriendshipPage() {
   };
 
   const createChallenge = async (finalAnswers: Record<number, string>) => {
+    let currentUserId = userId || localStorage.getItem('userId');
+    if (!currentUserId) {
+      currentUserId = 'guest_' + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem('userId', currentUserId);
+    }
+    const currentUsername = username || localStorage.getItem('username') || 'A Friend';
+
     setLoading(true);
     try {
       const res = await fetch('/api/friendship/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
-          username,
+          userId: currentUserId,
+          username: currentUsername,
           challengeType,
           rivalryMode,
           questions: questions.map((q, idx) => ({
@@ -132,12 +144,16 @@ export default function FriendshipPage() {
       });
       
       const data = await res.json();
-      setGameCode(data.shareCode);
-      setShareLink(data.shareLink);
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to create challenge');
+      }
+      const code = data.shareCode || data.challengeId;
+      setGameCode(code);
+      setShareLink(`https://games.roastme.site/friendship/accept/${data.challengeId || code}`);
       setStep('share');
       showToast('Challenge created! 🤝');
-    } catch (err) {
-      showToast('Failed to create challenge', 'error');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to create challenge', 'error');
     } finally {
       setLoading(false);
     }

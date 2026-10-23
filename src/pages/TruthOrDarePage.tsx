@@ -1,6 +1,6 @@
-// src/pages/TruthOrDarePage.tsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signInAnonymously } from 'firebase/auth';
 import { auth } from '../firebase';
 import { fetchWithAuth } from '../utils/apiUtils';
 import RoomLobby from '../components/games/RoomLobby';
@@ -21,9 +21,18 @@ export default function TruthOrDarePage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged(user => {
-      setCurrentUser(user);
-      if (user) {
+    const unsub = auth.onAuthStateChanged(async user => {
+      if (!user) {
+        try {
+          const cred = await signInAnonymously(auth);
+          setCurrentUser(cred.user);
+          loadActiveDares();
+          loadCombo();
+        } catch (e) {
+          console.warn("TOD guest auth notice:", e);
+        }
+      } else {
+        setCurrentUser(user);
         loadActiveDares();
         loadCombo();
       }
@@ -52,15 +61,20 @@ export default function TruthOrDarePage() {
   };
 
   const playSolo = async () => {
-    if (!currentUser) return;
     setLoading(true);
     try {
+      if (!auth.currentUser) {
+        await signInAnonymously(auth);
+      }
       const res = await fetchWithAuth('/api/truthordare/dare/generate', { method: 'POST' });
       const dare = await res.json();
       setCurrentDare(dare);
       setMode('solo');
-    } catch(e) {}
-    setLoading(false);
+    } catch(e) {
+      console.warn("Play solo error:", e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const acceptDare = () => {
@@ -72,7 +86,13 @@ export default function TruthOrDarePage() {
   const createRoomForTOD = async () => {
     setLoading(true);
     try {
-      const idToken = await auth.currentUser?.getIdToken();
+      let user = auth.currentUser;
+      if (!user) {
+        const cred = await signInAnonymously(auth);
+        user = cred.user;
+        setCurrentUser(user);
+      }
+      const idToken = await user.getIdToken();
       const res = await fetch('/api/room/create', {
         method: 'POST',
         headers: { 
@@ -90,15 +110,22 @@ export default function TruthOrDarePage() {
       }
     } catch (err) {
       setMessage('Error creating room');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const joinRoomByCode = async () => {
     if (joinCode.length < 6) return setMessage('Enter a valid 6-char code');
     setLoading(true);
     try {
-      const idToken = await auth.currentUser?.getIdToken();
+      let user = auth.currentUser;
+      if (!user) {
+        const cred = await signInAnonymously(auth);
+        user = cred.user;
+        setCurrentUser(user);
+      }
+      const idToken = await user.getIdToken();
       const res = await fetch('/api/room/join', {
         method: 'POST',
         headers: { 
@@ -116,14 +143,21 @@ export default function TruthOrDarePage() {
       }
     } catch (err) {
       setMessage('Error joining room');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const startMatchmaking = async () => {
     setMode('matchmaking');
     try {
-      const idToken = await auth.currentUser?.getIdToken();
+      let user = auth.currentUser;
+      if (!user) {
+        const cred = await signInAnonymously(auth);
+        user = cred.user;
+        setCurrentUser(user);
+      }
+      const idToken = await user.getIdToken();
       const res = await fetch('/api/room/matchmake', {
         method: 'POST',
         headers: { 
@@ -144,10 +178,9 @@ export default function TruthOrDarePage() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="text-6xl mb-4">🎲</div>
-          <h1 className="text-2xl text-white font-bold mb-2">Login Required</h1>
-          <p className="text-gray-400 mb-6">Login to play Truth or Dare and earn rewards!</p>
-          <button onClick={() => navigate('/auth')} className="bg-purple-600 px-6 py-2 rounded-full text-white font-bold">Login →</button>
+          <div className="text-6xl mb-4 animate-bounce">🎲</div>
+          <h1 className="text-xl text-white font-mono uppercase tracking-widest font-black mb-2">Connecting to Arena...</h1>
+          <p className="text-neon-green text-xs font-mono animate-pulse">Establishing game session</p>
         </div>
       </div>
     );

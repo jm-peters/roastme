@@ -248,7 +248,11 @@ export default function PrankPage() {
   };
 
   const handleCreate = async () => {
-    if (!userId) return;
+    let currentUserId = userId || localStorage.getItem('userId');
+    if (!currentUserId) {
+      currentUserId = 'guest_' + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem('userId', currentUserId);
+    }
     setLoading(true);
     
     let photoUrl = null;
@@ -269,20 +273,23 @@ export default function PrankPage() {
           title: title || selectedType.name,
           message: message || selectedType.defaultMessage,
           revealMessage: revealMessage || selectedType.defaultReveal,
-          creatorId: userId,
+          creatorId: currentUserId,
           creatorName: username || 'someone',
           photoUrl
         })
       });
       const data = await res.json();
+      if (!res.ok || !data.id) {
+        throw new Error(data.error || 'Failed to create prank');
+      }
       // Generate the local link correctly
       const baseUrl = 'https://games.roastme.site';
       setGeneratedLink(`${baseUrl}/prank/${data.id}`);
       setStep('share');
       showToast('Prank ready for action! 😈');
-    } catch (err) {
-      console.error('Failed to create prank:', err);
-      showToast('Failed to create prank', 'error');
+    } catch (err: any) {
+      console.warn('Failed to create prank:', err);
+      showToast(err.message || 'Failed to create prank', 'error');
     } finally {
       setLoading(false);
     }

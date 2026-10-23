@@ -3572,10 +3572,7 @@ async function startServer() {
 
   app.post("/api/friendship/create", async (req, res) => {
     const { userId, username, challengeType, questions, rivalryMode } = req.body;
-    
-    if (!username) {
-      return res.status(400).json({ error: 'Please create a roastboard first before creating challenges' });
-    }
+    const effectiveUsername = (username && username.trim()) || 'A Friend';
 
     if (!questions || questions.length !== 10) {
       return res.status(400).json({ error: 'Challenge must have exactly 10 questions' });
@@ -3600,7 +3597,7 @@ async function startServer() {
       id: challengeId,
       shareCode,
       creatorId: userId,
-      creatorUsername: username,
+      creatorUsername: effectiveUsername,
       challengeType: challengeType || "custom",
       questions: questions, // Array of {question, options, creatorAnswer}
       responses: [],
@@ -3619,7 +3616,7 @@ async function startServer() {
       success: true,
       challengeId, 
       shareCode,
-      shareLink: `https://${req.get('host')}/friendship/${challengeId}`,
+      shareLink: `https://games.roastme.site/friendship/accept/${challengeId}`,
       rivalryMode: !!rivalryMode
     });
   });
@@ -3786,9 +3783,9 @@ async function startServer() {
     const id = Math.random().toString(36).substr(2, 8);
     
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+    expiresAt.setDate(expiresAt.getDate() + 30);
 
-    const photoExpiresAt = photoUrl ? new Date(Date.now() + 30 * 60 * 1000).toISOString() : null;
+    const photoExpiresAt = photoUrl ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() : null;
 
     prankLinks[id] = {
       id,

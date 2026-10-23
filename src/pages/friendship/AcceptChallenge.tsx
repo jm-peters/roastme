@@ -114,12 +114,13 @@ export default function AcceptFriendshipChallenge() {
     
     try {
       const finalName = responderName.trim() || username || 'Anonymous';
+      const currentUserId = userId || localStorage.getItem('userId') || 'guest_' + Math.random().toString(36).substr(2, 9);
       const res = await fetch(`/api/friendship/challenge/${code}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           answers: finalAnswers,
-          responderId: userId,
+          responderId: currentUserId,
           responderName: finalName
         })
       });

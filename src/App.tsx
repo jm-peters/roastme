@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link, useSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useSearchParams, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 import { doc, getDoc, setDoc, onSnapshot, updateDoc, increment } from 'firebase/firestore';
 import { auth, db } from './firebase';
@@ -590,13 +590,6 @@ function Home({
   );
 }
 
-function RedirectToMain() {
-  useEffect(() => {
-    window.location.href = 'https://games.roastme.site/';
-  }, []);
-  return null;
-}
-
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -616,6 +609,35 @@ export default function App() {
   const [isAuthReady] = useState(true);
 
   useTimeTracking();
+
+  // Support legacy hash routes smoothly (e.g. #/arcade -> /arcade)
+  useEffect(() => {
+    if (window.location.hash && window.location.hash.startsWith('#/')) {
+      const cleanPath = window.location.hash.slice(1);
+      navigate(cleanPath, { replace: true });
+    }
+  }, [navigate]);
+
+  // Ensure every visitor is automatically authenticated with Firebase for multiplayer/games
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        try {
+          const cred = await signInAnonymously(auth);
+          if (cred?.user?.uid) {
+            localStorage.setItem('userId', cred.user.uid);
+            setUserId(cred.user.uid);
+          }
+        } catch (e) {
+          console.warn("Guest auth notice:", e);
+        }
+      } else {
+        localStorage.setItem('userId', user.uid);
+        setUserId(user.uid);
+      }
+    });
+    return () => unsub();
+  }, []);
 
   // Consolidate auth modal triggering
   useEffect(() => {
@@ -691,20 +713,36 @@ export default function App() {
               <Route path="/@:username" element={<RoastboardPage />} />
               <Route path="/anonymous" element={<AnonymousPage />} />
               <Route path="/anonymous/send/:code" element={<AnonymousSendPage />} />
+              {/* Friendship & Friends Routes */}
               <Route path="/friendship" element={<FriendshipPage />} />
+              <Route path="/friends" element={<FriendshipPage />} />
               <Route path="/friendship/accept/:code" element={<AcceptFriendshipChallenge />} />
+              <Route path="/friends/accept/:code" element={<AcceptFriendshipChallenge />} />
               <Route path="/friendship/results/:id" element={<FriendshipResultsPage />} />
-              <Route path="/tod/:username/:code" element={<InviteBattlePage />} />
-              <Route path="/friendship/:challengeId" element={<FriendshipPage />} />
+              <Route path="/friends/results/:id" element={<FriendshipResultsPage />} />
+              <Route path="/friendship/:code" element={<AcceptFriendshipChallenge />} />
+              <Route path="/friends/:code" element={<AcceptFriendshipChallenge />} />
+
+              {/* Truth or Dare Routes & Aliases */}
               <Route path="/truthordare" element={<TruthOrDarePage />} />
-              <Route path="/challenge-wall" element={<ChallengeWallPage />} />
+              <Route path="/truth-or-dare" element={<Navigate to="/truthordare" replace />} />
+              <Route path="/tod" element={<Navigate to="/truthordare" replace />} />
+              <Route path="/tod/:username/:code" element={<InviteBattlePage />} />
+              <Route path="/tod/:username/challenge" element={<TruthOrDareOpenChallenge />} />
               <Route path="/truthordare/room/:code" element={<DareRoomPage />} />
               <Route path="/truthordare/inbox" element={<InboxPage />} />
-              <Route path="/truthordare/:id" element={<AcceptTruthOrDare />} />
-              <Route path="/tod/:username/challenge" element={<TruthOrDareOpenChallenge />} />
               <Route path="/truthordare/invite/:code" element={<TruthOrDareInvite />} />
+              <Route path="/truthordare/:id" element={<AcceptTruthOrDare />} />
+              <Route path="/challenge-wall" element={<ChallengeWallPage />} />
+
+              {/* Prank Routes */}
               <Route path="/prank" element={<PrankPage />} />
+              <Route path="/prank/create" element={<PrankPage />} />
               <Route path="/prank/:id" element={<PrankExecutionPage />} />
+
+              <Route path="/battles" element={<Navigate to="/battle" replace />} />
+              <Route path="/pit" element={<Navigate to="/feed" replace />} />
+              <Route path="/auth" element={<RoastSessionV2 />} />
               <Route path="/games" element={<GamesHub />} />
               <Route path="/games/word" element={<WordGame />} />
               <Route path="/games/trivia" element={<TriviaGame />} />
@@ -734,7 +772,7 @@ export default function App() {
               <Route path="/privacy" element={<PrivacyPolicyPage />} />
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/cookies" element={<CookiePolicyPage />} />
-               <Route path="*" element={<RedirectToMain />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
 
